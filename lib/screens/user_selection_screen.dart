@@ -30,17 +30,48 @@ class UserSelectionScreen extends StatelessWidget {
                   color: userProvider.activeUser?.id == user.id ? Colors.blue[50] : null,
                   child: ListTile(
                     title: Text(user.name),
-                    subtitle: Text(user.m3uUrl),
+                    subtitle: Text('Hesap: ${user.name}'),
                     onTap: () async {
                       final iptvProvider = Provider.of<IptvProvider>(context, listen: false);
                       await userProvider.selectUser(user, iptvProvider: iptvProvider);
                       // Başarılıysa ana ekrana geçiş LoadingAndUpdateScreen ile olacak
                     },
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () async {
-                        await userProvider.removeUser(user.id);
-                      },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Update butonu - Yayın içeriğini güncelle
+                        IconButton(
+                          icon: Icon(Icons.refresh, color: Colors.green),
+                          tooltip: 'Yayın İçeriğini Güncelle',
+                          onPressed: () async {
+                            final iptvProvider = Provider.of<IptvProvider>(context, listen: false);
+                            await userProvider.selectUser(user, iptvProvider: iptvProvider);
+                            // Playlist'i yeniden yükle
+                            await iptvProvider.loadPlaylistFromUrl(user.m3uUrl);
+                          },
+                        ),
+                        // Edit butonu - Kullanıcı bilgilerini düzenle
+                        IconButton(
+                          icon: Icon(Icons.edit, color: Colors.orange),
+                          tooltip: 'Kullanıcı Bilgilerini Düzenle',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AddUserScreen(editingUser: user),
+                              ),
+                            );
+                          },
+                        ),
+                        // Delete butonu
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          tooltip: 'Kullanıcıyı Sil',
+                          onPressed: () async {
+                            await userProvider.removeUser(user.id);
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 );
