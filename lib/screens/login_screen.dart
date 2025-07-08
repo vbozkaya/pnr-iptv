@@ -285,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         subtitle: Text(
-          'M3U URL: ${session.m3uUrl.length > 30 ? '${session.m3uUrl.substring(0, 30)}...' : session.m3uUrl}',
+          'Hesap: ${session.name}',
           style: TextStyle(
             color: Colors.grey[400],
             fontSize: 12,
@@ -604,6 +604,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _usernameController.clear();
       _passwordController.clear();
       _dnsController.clear();
+      
+      // Sessions listesini yenile
+      await userProvider.refreshAllData();
       
       // Mevcut oturumlar sekmesine geç
       setState(() => _selectedTabIndex = 0);

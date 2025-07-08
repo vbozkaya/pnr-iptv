@@ -306,7 +306,19 @@ class IptvProvider with ChangeNotifier {
   /// Logout user
   Future<void> logout() async {
     await _storageService.logout();
-    await clearData();
+    // Only clear current session data, not all stored data
+    _channels.clear();
+    _filteredChannels.clear();
+    _searchQuery = '';
+    _selectedCategory = 'Tümü';
+    _error = null;
+    _cacheValid = false;
+    _categoryCache.clear();
+    _liveChannelsCache.clear();
+    _movieChannelsCache.clear();
+    _seriesChannelsCache.clear();
+    _cacheService.clearMemoryCache();
+    _notifyListeners();
   }
 
   /// Set loading state
