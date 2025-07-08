@@ -65,9 +65,9 @@ class IptvProvider with ChangeNotifier {
     _seriesChannelsCache = [];
     
     for (final channel in _channels) {
-      // Category cache
-      final category = channel.category ?? 'Genel';
-      _categoryCache.putIfAbsent(category, () => []).add(channel);
+      // Smart category detection
+      final smartCategory = _getSmartCategory(channel);
+      _categoryCache.putIfAbsent(smartCategory, () => []).add(channel);
       
       // Type cache
       final cat = (channel.category ?? '').toLowerCase();
@@ -84,17 +84,194 @@ class IptvProvider with ChangeNotifier {
     
     // Preload channel logos for better performance
     _preloadChannelLogos();
+
+    // --- KANAL LİSTESİNİ TERMİNALE YAZDIR ---
+    print('--- CANLI KANALLAR LİSTESİ ---');
+    for (final channel in _liveChannelsCache) {
+      print('Kanal: ${channel.name} | Açıklama: ${channel.description ?? "Yok"} | Kategori: ${_getSmartCategory(channel)}');
+    }
+    print('--- TOPLAM: ${_liveChannelsCache.length} KANAL ---');
+  }
+
+  /// Get the smart category for a channel (public method)
+  String getChannelCategory(Channel channel) {
+    return _getSmartCategory(channel);
+  }
+
+  /// Smart category detection based on channel description and original category
+  String _getSmartCategory(Channel channel) {
+    final name = channel.name.toLowerCase();
+    final originalCategory = (channel.category ?? '').toLowerCase();
+    final description = (channel.description ?? '').toLowerCase();
+
+    // TR Ulusal Kanalları
+    if (description.contains('tr ∞ ulusal') || description.contains('tr ulusal') || description.contains('ulusal') ||
+        name.contains('trt') || name.contains('atv') || name.contains('show') || name.contains('kanal d') ||
+        name.contains('tv8') || name.contains('habertürk') || name.contains('cnn türk') || name.contains('ntv') ||
+        name.contains('fox') || name.contains('star') || name.contains('kanal 7') || name.contains('samanyolu') ||
+        name.contains('tgrthaber') || name.contains('a haber') || name.contains('ulusal') ||
+        name.contains('a2 tv') || name.contains('teve2') || name.contains('beyaz tv') || name.contains('360 tv')) {
+      return 'TR Ulusal';
+    }
+
+    // TR Yerel Kanallar
+    if (description.contains('tr ∞ yerel') || description.contains('tr yerel') || description.contains('yerel') ||
+        name.contains('yerel') || name.contains('bursa') || name.contains('izmir') || name.contains('antalya') ||
+        name.contains('adana') || name.contains('ankara') || name.contains('konya') || name.contains('trabzon') ||
+        name.contains('gaziantep') || name.contains('kayseri') || name.contains('samsun') || name.contains('eskişehir')) {
+      return 'TR Yerel';
+    }
+
+    // TR Magazin
+    if (name.contains('magazin') || name.contains('magazine')) {
+      return 'TR Magazin';
+    }
+
+    // TR Dini
+    if (name.contains('dini') || name.contains('ilahiyat') || name.contains('mevlana') || name.contains('diyanet') ||
+        name.contains('islam') || name.contains('kur-an') || name.contains('kuran') || name.contains('imam')) {
+      return 'TR Dini';
+    }
+
+    // TR Alışveriş
+    if (name.contains('alışveriş') || name.contains('alisveris') || name.contains('shopping') || name.contains('shop')) {
+      return 'TR Alışveriş';
+    }
+
+    // TR Eğitim
+    if (name.contains('eğitim') || name.contains('egitim') || name.contains('okul') || name.contains('üniversite') ||
+        name.contains('universite') || name.contains('ders') || name.contains('education') || name.contains('school')) {
+      return 'TR Eğitim';
+    }
+
+    // TR Motospor
+    if (name.contains('moto') || name.contains('motorsport') || name.contains('motorspor') || name.contains('formula') ||
+        name.contains('f1') || name.contains('ralli') || name.contains('rally')) {
+      return 'TR Motospor';
+    }
+
+    // TR Talk Show
+    if (name.contains('talk show') || name.contains('sohbet') || name.contains('talkshow')) {
+      return 'TR Talk Show';
+    }
+
+    // TR Yemek
+    if (name.contains('yemek') || name.contains('mutfak') || name.contains('lezzet') || name.contains('food') ||
+        name.contains('chef') || name.contains('aşçı') || name.contains('asci')) {
+      return 'TR Yemek';
+    }
+
+    // TR Moda
+    if (name.contains('moda') || name.contains('fashion')) {
+      return 'TR Moda';
+    }
+
+    // TR Sağlık
+    if (name.contains('sağlık') || name.contains('saglik') || name.contains('health') || name.contains('doktor') ||
+        name.contains('hastane') || name.contains('hospital')) {
+      return 'TR Sağlık';
+    }
+
+    // TR Hava Durumu
+    if (name.contains('hava durumu') || name.contains('weather')) {
+      return 'TR Hava Durumu';
+    }
+
+    // TR Oyun
+    if (name.contains('oyun') || name.contains('game') || name.contains('gaming') || name.contains('e-spor') ||
+        name.contains('espor')) {
+      return 'TR Oyun';
+    }
+
+    // TR Ekonomi
+    if (name.contains('ekonomi') || name.contains('economy') || name.contains('borsa') || name.contains('finans') ||
+        name.contains('finance') || name.contains('para')) {
+      return 'TR Ekonomi';
+    }
+
+    // TR Kültür
+    if (name.contains('kültür') || name.contains('kultur') || name.contains('culture')) {
+      return 'TR Kültür';
+    }
+
+    // TR Tarih
+    if (name.contains('tarih') || name.contains('history')) {
+      return 'TR Tarih';
+    }
+
+    // TR Otomobil
+    if (name.contains('otomobil') || name.contains('araba') || name.contains('auto') || name.contains('car')) {
+      return 'TR Otomobil';
+    }
+
+    // TR Hobi
+    if (name.contains('hobi') || name.contains('hobby')) {
+      return 'TR Hobi';
+    }
+
+    // TR Tatil
+    if (name.contains('tatil') || name.contains('holiday') || name.contains('turizm') || name.contains('tourism')) {
+      return 'TR Tatil';
+    }
+
+    // TR Spor (genel)
+    if (description.contains('tr ∞ spor') || description.contains('tr spor') || description.contains('spor') ||
+        name.contains('spor') || name.contains('sport') || originalCategory.contains('spor') || originalCategory.contains('sport')) {
+      return 'TR Spor';
+    }
+
+    // TR Belgesel
+    if (description.contains('tr ∞ belgesel') || description.contains('tr belgesel') || description.contains('belgesel') ||
+        name.contains('belgesel') || name.contains('documentary') || originalCategory.contains('belgesel') || originalCategory.contains('documentary')) {
+      return 'TR Belgesel';
+    }
+
+    // TR Çocuk
+    if (description.contains('tr ∞ çocuk') || description.contains('tr çocuk') || description.contains('çocuk') ||
+        name.contains('çocuk') || name.contains('cocuk') || name.contains('kids') || name.contains('cartoon') ||
+        name.contains('disney') || originalCategory.contains('çocuk') || originalCategory.contains('kids')) {
+      return 'TR Çocuk';
+    }
+
+    // TR Müzik
+    if (description.contains('tr ∞ müzik') || description.contains('tr müzik') || description.contains('müzik') ||
+        name.contains('müzik') || name.contains('muzik') || name.contains('music') || name.contains('kral') ||
+        name.contains('powertürk') || originalCategory.contains('müzik') || originalCategory.contains('music')) {
+      return 'TR Müzik';
+    }
+
+    // TR Eğlence
+    if (description.contains('tr ∞ eğlence') || description.contains('tr eğlence') || description.contains('eğlence') ||
+        name.contains('eğlence') || name.contains('eglence') || name.contains('entertainment') ||
+        originalCategory.contains('eğlence') || originalCategory.contains('entertainment')) {
+      return 'TR Eğlence';
+    }
+
+    // TR Haber
+    if (description.contains('tr ∞ haber') || description.contains('tr haber') || description.contains('haber') ||
+        name.contains('haber') || name.contains('news') || originalCategory.contains('haber') || originalCategory.contains('news')) {
+      return 'TR Haber';
+    }
+
+    // TR Beinsport
+    if (name.contains('beinsport') || name.contains('bein sport') || name.contains('s sport') ||
+        name.contains('tivibu spor')) {
+      return 'TR Beinsport';
+    }
+
+    // Yabancı Kanallar
+    if (name.contains('bbc') || name.contains('cnn') || name.contains('sky') || name.contains('eurosport') ||
+        name.contains('discovery') || name.contains('national geographic')) {
+      return 'Yabancı Kanallar';
+    }
+
+    // Varsayılan olarak TR Genel
+    return 'TR Genel';
   }
 
   void _preloadChannelLogos() {
-    final logoUrls = _channels
-        .where((channel) => channel.logoUrl != null)
-        .map((channel) => channel.logoUrl!)
-        .toList();
-    
-    if (logoUrls.isNotEmpty) {
-      _cacheService.preloadImages(logoUrls);
-    }
+    // Resim yükleme devre dışı (performans için)
+    // Gelecekte optimize edilmiş resim sistemi eklenecek
   }
 
   IptvProvider() {

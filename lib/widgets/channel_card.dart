@@ -50,38 +50,14 @@ class ChannelCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey[200],
       ),
-      child: channel.logoUrl != null
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: channel.logoUrl!,
-                fit: BoxFit.cover,
-                memCacheWidth: 120,
-                memCacheHeight: 120,
-                cacheManager: CacheService().cacheManager,
-                placeholder: (context, url) => Container(
-                  color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.tv,
-                    color: Colors.grey,
-                  ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.tv,
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-            )
-          : Container(
-              color: Colors.grey[300],
-              child: const Icon(
-                Icons.tv,
-                color: Colors.grey,
-              ),
-            ),
+      child: Container(
+        color: Colors.grey[300],
+        child: const Icon(
+          Icons.tv,
+          color: Colors.grey,
+          size: 24,
+        ),
+      ),
     );
   }
 

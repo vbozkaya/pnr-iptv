@@ -7,10 +7,20 @@ class CacheService {
   CacheService._internal();
 
   final DefaultCacheManager _cacheManager = DefaultCacheManager();
+  
+  // Bellek kullanımını sınırla
+  static const int maxMemoryCacheSize = 10; // Maksimum 10 öğe
+  static const int maxDiskCacheSize = 10 * 1024 * 1024; // 10MB disk cache
   final Map<String, dynamic> _memoryCache = {};
 
   /// Cache data in memory
   void cacheData(String key, dynamic data) {
+    // Bellek cache boyutunu sınırla
+    if (_memoryCache.length >= maxMemoryCacheSize) {
+      // En eski öğeyi kaldır
+      final oldestKey = _memoryCache.keys.first;
+      _memoryCache.remove(oldestKey);
+    }
     _memoryCache[key] = data;
   }
 
@@ -46,14 +56,7 @@ class CacheService {
 
   /// Preload images for better performance
   Future<void> preloadImages(List<String> imageUrls) async {
-    if (!await isConnected()) return;
-    
-    for (final url in imageUrls) {
-      try {
-        await _cacheManager.getSingleFile(url);
-      } catch (e) {
-        // Silent fail for preloading
-      }
-    }
+    // Resim yükleme devre dışı (performans için)
+    // Gelecekte optimize edilmiş resim sistemi eklenecek
   }
 } 

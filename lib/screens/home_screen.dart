@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
-  String _selectedCategory = 'Tümü';
+  String _selectedCategory = '';
   late TabController _tabController;
 
   @override
@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Hata: ${provider.error}',
+                    'Hata:  ${provider.error}',
                     style: const TextStyle(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
@@ -109,9 +109,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildChannelList(provider.liveChannels, provider),
-                    _buildChannelList(provider.movieChannels, provider),
-                    _buildChannelList(provider.seriesChannels, provider),
+                    _buildLiveChannelsMasterDetail(provider),
+                    _buildFlatChannelList(provider.movieChannels, provider),
+                    _buildFlatChannelList(provider.seriesChannels, provider),
                   ],
                 ),
               ),
@@ -144,6 +144,85 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  Widget _buildLiveChannelsMasterDetail(IptvProvider provider) {
+    final Map<String, List<Channel>> groupedChannels = {};
+    for (final channel in provider.liveChannels) {
+      final category = provider.getChannelCategory(channel);
+      groupedChannels.putIfAbsent(category, () => []).add(channel);
+    }
+    final sortedCategories = groupedChannels.keys.toList()
+      ..sort((a, b) {
+        final priority = {
+          'TR Ulusal': 1,
+          'TR Beinsport': 2,
+          'TR Haber': 3,
+          'TR Spor': 4,
+          'TR Eğlence': 5,
+          'TR Çocuk': 6,
+          'TR Müzik': 7,
+          'TR Belgesel': 8,
+          'TR Genel': 9,
+          'Canlı Film': 10,
+          'Canlı Dizi': 11,
+          'Yabancı Kanallar': 12,
+        };
+        final aPriority = priority[a] ?? 999;
+        final bPriority = priority[b] ?? 999;
+        return aPriority.compareTo(bPriority);
+      });
+    // Varsayılan seçili kategori ilk kategori olsun
+    final selected = _selectedCategory.isNotEmpty && groupedChannels.containsKey(_selectedCategory)
+        ? _selectedCategory
+        : (sortedCategories.isNotEmpty ? sortedCategories[0] : '');
+    if (_selectedCategory != selected) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _selectedCategory = selected;
+        });
+      });
+    }
+    return Row(
+      children: [
+        // Sol: Kategori listesi
+        Container(
+          width: 220,
+          color: Colors.grey[900],
+          child: ListView.builder(
+            itemCount: sortedCategories.length,
+            itemBuilder: (context, index) {
+              final category = sortedCategories[index];
+              final isSelected = category == _selectedCategory;
+              return ListTile(
+                selected: isSelected,
+                selectedTileColor: Colors.deepPurple.withOpacity(0.2),
+                leading: Icon(_getCategoryIcon(category), color: isSelected ? Colors.deepPurple : Colors.white),
+                title: Text(
+                  category,
+                  style: TextStyle(
+                    color: isSelected ? Colors.deepPurple : Colors.white,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedCategory = category;
+                  });
+                },
+              );
+            },
+          ),
+        ),
+        // Sağ: Seçili kategorinin kanalları
+        Expanded(
+          child: _buildChannelList(
+            groupedChannels[_selectedCategory] ?? [],
+            provider,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildChannelList(List<Channel> channels, IptvProvider provider) {
     if (channels.isEmpty) {
       return const Center(
@@ -154,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       );
     }
     
+    // Sadece kanal listesini göster, kategori başlığı olmadan
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: channels.length,
@@ -170,6 +250,37 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  IconData _getCategoryIcon(String category) {
+    switch (category) {
+      case 'TR Ulusal':
+        return Icons.tv;
+      case 'TR Beinsport':
+        return Icons.sports_soccer;
+      case 'TR Haber':
+        return Icons.article;
+      case 'TR Spor':
+        return Icons.sports;
+      case 'TR Eğlence':
+        return Icons.celebration;
+      case 'TR Çocuk':
+        return Icons.child_care;
+      case 'TR Müzik':
+        return Icons.music_note;
+      case 'TR Belgesel':
+        return Icons.nature;
+      case 'TR Genel':
+        return Icons.live_tv;
+      case 'Canlı Film':
+        return Icons.movie;
+      case 'Canlı Dizi':
+        return Icons.tv;
+      case 'Yabancı Kanallar':
+        return Icons.language;
+      default:
+        return Icons.category;
+    }
+  }
+
   void _playChannel(Channel channel) {
     Navigator.push(
       context,
@@ -183,6 +294,77 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     showDialog(
       context: context,
       builder: (context) => const PlaylistDialog(),
+    );
+  }
+
+  void _showAllChannelsInCategory(BuildContext context, String category, List<Channel> channels, IptvProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: const BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.withOpacity(0.2),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _getCategoryIcon(category),
+                    color: Colors.deepPurple,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      category,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            // Channels list
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: channels.length,
+                itemBuilder: (context, index) {
+                  final channel = channels[index];
+                  return ChannelCard(
+                    key: ValueKey(channel.id),
+                    channel: channel,
+                    isFavorite: provider.isFavorite(channel.id),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _playChannel(channel);
+                    },
+                    onFavoriteToggle: () => provider.toggleFavorite(channel),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -212,6 +394,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFlatChannelList(List<Channel> channels, IptvProvider provider) {
+    if (channels.isEmpty) {
+      return const Center(
+        child: Text(
+          'İçerik bulunamadı',
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: channels.length,
+      itemBuilder: (context, index) {
+        final channel = channels[index];
+        return ChannelCard(
+          key: ValueKey(channel.id),
+          channel: channel,
+          isFavorite: provider.isFavorite(channel.id),
+          onTap: () => _playChannel(channel),
+          onFavoriteToggle: () => provider.toggleFavorite(channel),
+        );
+      },
     );
   }
 }

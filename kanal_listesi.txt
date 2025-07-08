@@ -1,0 +1,145 @@
+PNR IPTV - KANAL LİSTESİ
+========================
+Toplam: 90 Kanal
+
+CANLI KANALLAR:
+==============
+
+TR ULUSAL KANALLAR:
+-------------------
+- TRT 1 HD
+- TRT 1 FHD
+- TRT 1 FHD RAW
+- ATV HD
+- ATV FHD
+- ATV FHD RAW
+- Show TV HD
+- Show TV FHD
+- Show TV FHD RAW
+- Kanal D HD
+- Kanal D FHD
+- Kanal D FHD RAW
+- TV8 HD
+- TV8 FHD
+- TV8 FHD RAW
+- Fox TV HD
+- Fox TV FHD
+- Fox TV FHD RAW
+- Star TV HD
+- Star TV FHD
+- Star TV FHD RAW
+- Kanal 7 HD
+- Kanal 7 FHD
+- Kanal 7 FHD RAW
+- Samanyolu TV HD
+- Samanyolu TV FHD
+- Samanyolu TV FHD RAW
+- TGRT Haber HD
+- TGRT Haber FHD
+- TGRT Haber FHD RAW
+- A Haber HD
+- A Haber FHD
+- A Haber FHD RAW
+- A2 TV HD
+- A2 TV FHD
+- A2 TV FHD RAW
+- Teve2 HD
+- Teve2 FHD
+- Teve2 FHD RAW
+- Beyaz TV HD
+- Beyaz TV FHD
+- Beyaz TV FHD RAW
+- 360 TV HD
+- 360 TV FHD
+- 360 TV FHD RAW
+
+TR HABER KANALLAR:
+------------------
+- HALK TV HD
+- HALK TV FHD
+- HALK TV FHD RAW
+- SZC TV HD
+- EKOL TV FHD
+- ULKE TV HD
+- ULKE TV FHD
+- ULKE TV FHD RAW
+- HABER GLOBAL HD
+- HABER GLOBAL FHD
+- BLOOMBERG HT HD
+- BLOOMBERGHT FHD
+- BLOOMBERGHT FHD RAW
+- CNBC-E FHD
+- TH TURK HABER HD
+- Habertürk HD
+- Habertürk FHD
+- Habertürk FHD RAW
+- CNN Türk HD
+- CNN Türk FHD
+- CNN Türk FHD RAW
+- NTV HD
+- NTV FHD
+- NTV FHD RAW
+
+TR SPOR KANALLAR:
+-----------------
+- TRT Spor HD
+- TRT Spor FHD
+- TRT Spor FHD RAW
+- Bein Sports HD
+- Bein Sports FHD
+- Bein Sports FHD RAW
+- S Sport HD
+- S Sport FHD
+- S Sport FHD RAW
+- Tivibu Spor HD
+- Tivibu Spor FHD
+- Tivibu Spor FHD RAW
+
+TR BELGESEL KANALLAR:
+---------------------
+- TRT Belgesel HD
+- TRT Belgesel FHD
+- TRT Belgesel FHD RAW
+- Discovery Channel HD
+- Discovery Channel FHD
+- Discovery Channel FHD RAW
+- National Geographic HD
+- National Geographic FHD
+- National Geographic FHD RAW
+
+TR ÇOCUK KANALLAR:
+------------------
+- TRT Çocuk HD
+- TRT Çocuk FHD
+- TRT Çocuk FHD RAW
+- Cartoon Network HD
+- Cartoon Network FHD
+- Cartoon Network FHD RAW
+- Disney Channel HD
+- Disney Channel FHD
+- Disney Channel FHD RAW
+
+TR MÜZİK KANALLAR:
+------------------
+- TRT Müzik HD
+- TRT Müzik FHD
+- TRT Müzik FHD RAW
+- Kral TV HD
+- Kral TV FHD
+- Kral TV FHD RAW
+- PowerTürk TV HD
+- PowerTürk TV FHD
+- PowerTürk TV FHD RAW
+
+TR EĞLENCE KANALLAR:
+--------------------
+- TRT Eğlence HD
+- TRT Eğlence FHD
+- TRT Eğlence FHD RAW
+
+TR GENEL KANALLAR:
+------------------
+- Diğer tüm kanallar bu kategoriye düşmektedir.
+
+NOT: Bu liste, uygulamanın otomatik kategorilendirme sistemi tarafından oluşturulmuştur.
+Kanal isimleri ve kategoriler, kanal adlarındaki anahtar kelimelere göre belirlenmektedir. 

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
+import '../models/user.dart';
 
 class AddUserScreen extends StatefulWidget {
+  final User? editingUser;
+  
+  const AddUserScreen({Key? key, this.editingUser}) : super(key: key);
+
   @override
   State<AddUserScreen> createState() => _AddUserScreenState();
 }
@@ -15,9 +20,23 @@ class _AddUserScreenState extends State<AddUserScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    // Eğer düzenleme modundaysa, mevcut bilgileri yükle
+    if (widget.editingUser != null) {
+      _name = widget.editingUser!.name;
+      _m3uUrl = widget.editingUser!.m3uUrl;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isEditing = widget.editingUser != null;
+    
     return Scaffold(
-      appBar: AppBar(title: Text('Yeni Kullanıcı Ekle')),
+      appBar: AppBar(
+        title: Text(isEditing ? 'Kullanıcı Düzenle' : 'Yeni Kullanıcı Ekle'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -28,11 +47,15 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 decoration: InputDecoration(labelText: 'Kullanıcı Adı'),
                 validator: (v) => v == null || v.isEmpty ? 'Zorunlu alan' : null,
                 onSaved: (v) => _name = v ?? '',
+                initialValue: isEditing ? _name : null,
+                controller: isEditing ? TextEditingController(text: _name) : null,
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'M3U URL'),
                 validator: (v) => v == null || v.isEmpty ? 'Zorunlu alan' : null,
                 onSaved: (v) => _m3uUrl = v ?? '',
+                initialValue: isEditing ? _m3uUrl : null,
+                controller: isEditing ? TextEditingController(text: _m3uUrl) : null,
               ),
               SizedBox(height: 24),
               if (_isLoading) CircularProgressIndicator(),
@@ -42,7 +65,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   child: Text(_error!, style: TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(
-                child: Text('Ekle'),
+                child: Text(isEditing ? 'Güncelle' : 'Ekle'),
                 onPressed: _isLoading
                     ? null
                     : () async {
@@ -53,8 +76,20 @@ class _AddUserScreenState extends State<AddUserScreen> {
                             _error = null;
                           });
                           try {
-                            await Provider.of<UserProvider>(context, listen: false)
-                                .addUser(_name, _m3uUrl);
+                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            
+                            if (isEditing) {
+                              // Düzenleme modu - kullanıcıyı güncelle
+                              await userProvider.updateUser(
+                                widget.editingUser!.id,
+                                _name,
+                                _m3uUrl,
+                              );
+                            } else {
+                              // Yeni kullanıcı ekleme modu
+                              await userProvider.addUser(_name, _m3uUrl);
+                            }
+                            
                             Navigator.pop(context);
                           } catch (e) {
                             setState(() {
