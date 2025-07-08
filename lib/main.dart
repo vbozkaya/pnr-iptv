@@ -6,6 +6,7 @@ import 'providers/user_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/tv_home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/user_selection_screen.dart';
 import 'services/storage_service.dart';
 
 void main() async {
@@ -123,16 +124,16 @@ class _SplashScreenState extends State<SplashScreen> {
             MaterialPageRoute(builder: (context) => const DeviceSpecificHome()),
           );
         } else {
-          // Kullanıcı giriş yapmamış, login sayfasına yönlendir
+          // Kullanıcı giriş yapmamış, kullanıcı seçim sayfasına yönlendir
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            MaterialPageRoute(builder: (context) => const UserSelectionScreen()),
           );
         }
       }
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          MaterialPageRoute(builder: (context) => const UserSelectionScreen()),
         );
       }
     }
